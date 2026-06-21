@@ -9,7 +9,8 @@ export class BattleDamageActorConfig extends FormApplication {
       title: game.i18n.localize("TBD.ActorConfig.Title"),
       template: "modules/token-battle-damage/templates/actor-config.hbs",
       width: 760,
-      height: "auto",
+      height: 560,
+      resizable: true,
       closeOnSubmit: true,
       submitOnChange: false,
       submitOnClose: false

@@ -4,7 +4,7 @@ Token Battle Damage is a Foundry VTT module that swaps token artwork as an actor
 
 ## Version
 
-Current development version: `0.1.1`
+Current development version: `0.1.2`
 
 ## Features in this first build
 
