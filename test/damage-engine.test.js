@@ -21,6 +21,7 @@ globalThis.foundry = {
 };
 
 const engine = await import("../scripts/damage-engine.js");
+const assetFolders = await import("../scripts/asset-folders.js");
 
 test("calculateHpPercent clamps and rounds upward", () => {
   assert.equal(engine.calculateHpPercent(8, 10), 80);
@@ -56,4 +57,18 @@ test("pathMayBeIncluded handles nested and flattened update payloads", () => {
   assert.equal(engine.pathMayBeIncluded({ system: { attributes: { hp: { value: 4 } } } }, "system.attributes.hp.value"), true);
   assert.equal(engine.pathMayBeIncluded({ "system.attributes.hp.value": 4 }, "system.attributes.hp.value"), true);
   assert.equal(engine.pathMayBeIncluded({ system: { details: { biography: "x" } } }, "system.attributes.hp.value"), false);
+});
+
+test("slugifyActorFolder creates readable safe folder names", () => {
+  assert.equal(assetFolders.slugifyActorFolder("Creeg Greythorn"), "Creeg-Greythorn");
+  assert.equal(assetFolders.slugifyActorFolder("A/B: C*D?"), "A-B-C-D");
+  assert.equal(assetFolders.slugifyActorFolder("", "abc123"), "abc123");
+});
+
+test("normalizeDirectoryPath trims duplicate separators", () => {
+  assert.equal(assetFolders.normalizeDirectoryPath(" BattleDamage\\Creeg Greythorn/ "), "BattleDamage/Creeg Greythorn");
+});
+
+test("getActorImageDirectory uses the configured root folder", () => {
+  assert.equal(assetFolders.getActorImageDirectory({ name: "Creeg Greythorn", id: "actor1" }), "BattleDamage/Creeg-Greythorn");
 });

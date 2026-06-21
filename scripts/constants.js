@@ -1,4 +1,5 @@
 export const MODULE_ID = "token-battle-damage";
+export const DEFAULT_BATTLE_DAMAGE_DIRECTORY = "BattleDamage";
 
 export const FLAGS = {
   CONFIG: "config",

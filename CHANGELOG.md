@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Defaulted battle damage image storage to a `BattleDamage` User Data folder.
+- Added automatic actor-specific art folder creation when battle damage is enabled.
+- Pointed the Actor art browser and empty image pickers at the actor-specific folder.
+
 ## 0.1.3
 
 - Fixed the damage-stage header overlap while scrolling in the Actor configuration dialog.

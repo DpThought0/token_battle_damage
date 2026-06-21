@@ -1,6 +1,6 @@
-import { FLAGS, MODULE_ID, SETTINGS } from "./constants.js";
-import { getSetting } from "./settings.js";
+import { FLAGS, MODULE_ID } from "./constants.js";
 import { normalizeConfig } from "./damage-engine.js";
+import { ensureActorImageDirectory, getActorImageDirectory } from "./asset-folders.js";
 
 export class BattleDamageActorConfig extends FormApplication {
   static get defaultOptions() {
@@ -29,7 +29,7 @@ export class BattleDamageActorConfig extends FormApplication {
       ...data,
       actor: this.actor,
       config,
-      defaultImageDirectory: getDefaultImageDirectory(),
+      defaultImageDirectory: getActorImageDirectory(this.actor),
       tokenizerAvailable: game.modules.get(MODULE_ID)?.api?.isTokenizerAvailable?.() ?? false
     };
   }
@@ -62,17 +62,23 @@ export class BattleDamageActorConfig extends FormApplication {
     };
 
     await this.actor.setFlag(MODULE_ID, FLAGS.CONFIG, config);
+
+    if (config.enabled) {
+      await this.#ensureActorDirectory({ notify: true });
+    }
   }
 
-  #openFilePicker(event) {
+  async #openFilePicker(event) {
     event.preventDefault();
     const target = event.currentTarget;
     const input = target.closest(".tbd-stage")?.querySelector("input[data-image-path]");
     if (!input) return;
 
+    const directory = input.value || await this.#ensureActorDirectory({ notify: false });
+
     new FilePicker({
       type: "image",
-      current: input.value || getDefaultImageDirectory(),
+      current: directory,
       callback: (path) => {
         input.value = path;
       }
@@ -82,11 +88,26 @@ export class BattleDamageActorConfig extends FormApplication {
   #openArtBrowser(event) {
     event.preventDefault();
 
-    new FilePicker({
-      type: "image",
-      current: getDefaultImageDirectory(),
-      callback: () => {}
-    }).browse();
+    this.#ensureActorDirectory({ notify: false }).then((directory) => {
+      new FilePicker({
+        type: "image",
+        current: directory,
+        callback: () => {}
+      }).browse();
+    });
+  }
+
+  async #ensureActorDirectory({ notify = false } = {}) {
+    try {
+      const directory = await ensureActorImageDirectory(this.actor);
+      if (notify) {
+        ui.notifications.info(game.i18n.format("TBD.ActorConfig.ActorFolderReady", { directory }));
+      }
+      return directory;
+    } catch (error) {
+      ui.notifications.warn(game.i18n.format("TBD.ActorConfig.ActorFolderFailed", { error: error.message }));
+      return getActorImageDirectory(this.actor);
+    }
   }
 
   async #addStage(event) {
@@ -160,9 +181,4 @@ function clampPercent(value) {
   const number = Number(value);
   if (!Number.isFinite(number)) return 0;
   return Math.max(0, Math.min(100, Math.round(number)));
-}
-
-function getDefaultImageDirectory() {
-  const configured = String(getSetting(SETTINGS.DEFAULT_IMAGE_DIRECTORY) ?? "").trim();
-  return configured || "";
 }

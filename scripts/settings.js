@@ -1,4 +1,4 @@
-import { MODULE_ID, SETTINGS } from "./constants.js";
+import { DEFAULT_BATTLE_DAMAGE_DIRECTORY, MODULE_ID, SETTINGS } from "./constants.js";
 
 export function registerSettings() {
   game.settings.register(MODULE_ID, SETTINGS.HP_CURRENT_PATH, {
@@ -52,7 +52,7 @@ export function registerSettings() {
     scope: "world",
     config: true,
     type: String,
-    default: ""
+    default: DEFAULT_BATTLE_DAMAGE_DIRECTORY
   });
 
   game.settings.register(MODULE_ID, SETTINGS.ONLY_GM_UPDATES, {
