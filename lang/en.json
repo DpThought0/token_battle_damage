@@ -1,8 +1,8 @@
 {
   "TBD.Settings.HpCurrentPath.Name": "Current HP data path",
-  "TBD.Settings.HpCurrentPath.Hint": "Actor data path used to read current HP, for example system.attributes.hp.value.",
+  "TBD.Settings.HpCurrentPath.Hint": "Path to current HP. To find it: open an Actor, press F12, run console.dir(actor.system), then expand the HP data and build the path after system. Example: system.attributes.hp.value.",
   "TBD.Settings.HpMaxPath.Name": "Maximum HP data path",
-  "TBD.Settings.HpMaxPath.Hint": "Actor data path used to read maximum HP, for example system.attributes.hp.max.",
+  "TBD.Settings.HpMaxPath.Hint": "Path to max HP. To find it: open an Actor, press F12, run console.dir(actor.system), then expand the HP data and build the path after system. Example: system.attributes.hp.max.",
   "TBD.Settings.EnableAutomaticUpdates.Name": "Enable automatic token updates",
   "TBD.Settings.EnableAutomaticUpdates.Hint": "When enabled, token art changes automatically when configured actor HP changes.",
   "TBD.Settings.RevertOnHealing.Name": "Revert image when healed",

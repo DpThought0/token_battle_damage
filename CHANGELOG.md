@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Added short HP path discovery instructions to the module settings and README.
+
 ## 0.1.4
 
 - Defaulted battle damage image storage to a `BattleDamage` User Data folder.
