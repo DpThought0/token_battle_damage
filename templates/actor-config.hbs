@@ -1,0 +1,66 @@
+<form class="tbd-config-form" autocomplete="off">
+  <div class="form-group">
+    <label>{{localize "TBD.ActorConfig.Enabled"}}</label>
+    <input type="checkbox" name="enabled" {{checked config.enabled}}>
+  </div>
+
+  {{#if tokenizerAvailable}}
+    <p class="notes">{{localize "TBD.ActorConfig.TokenizerDetected"}}</p>
+  {{/if}}
+
+  <section class="tbd-stage-list">
+    <header class="tbd-stage-header">
+      <span>{{localize "TBD.ActorConfig.Stage"}}</span>
+      <span>{{localize "TBD.ActorConfig.Range"}}</span>
+      <span>{{localize "TBD.ActorConfig.Image"}}</span>
+      <span></span>
+    </header>
+
+    {{#each config.stages as |stage index|}}
+      <div class="tbd-stage" data-stage-id="{{stage.id}}">
+        <input type="hidden" name="stages.{{index}}.id" value="{{stage.id}}">
+
+        <div class="tbd-stage-label">
+          <input type="text" name="stages.{{index}}.label" value="{{stage.label}}">
+          <label class="tbd-use-original">
+            <input type="checkbox" name="stages.{{index}}.useOriginal" {{checked stage.useOriginal}}>
+            {{localize "TBD.ActorConfig.UseOriginal"}}
+          </label>
+        </div>
+
+        <div class="tbd-stage-range">
+          <input type="number" name="stages.{{index}}.minPct" value="{{stage.minPct}}" min="0" max="100">
+          <span>-</span>
+          <input type="number" name="stages.{{index}}.maxPct" value="{{stage.maxPct}}" min="0" max="100">
+          <span>%</span>
+        </div>
+
+        <div class="tbd-stage-image">
+          <input type="text" name="stages.{{index}}.img" value="{{stage.img}}" data-image-path>
+          <button type="button" data-action="file-picker" title="{{localize 'TBD.ActorConfig.Browse'}}">
+            <i class="fas fa-file-import"></i>
+          </button>
+        </div>
+
+        <button type="button" data-action="remove-stage" title="{{localize 'TBD.ActorConfig.RemoveStage'}}">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    {{/each}}
+  </section>
+
+  <footer class="sheet-footer flexrow">
+    <button type="button" data-action="add-stage">
+      <i class="fas fa-plus"></i> {{localize "TBD.ActorConfig.AddStage"}}
+    </button>
+    <button type="button" data-action="auto-distribute">
+      <i class="fas fa-sliders-h"></i> {{localize "TBD.ActorConfig.AutoDistribute"}}
+    </button>
+    <button type="button" data-action="restore-original">
+      <i class="fas fa-rotate-left"></i> {{localize "TBD.ActorConfig.RestoreOriginal"}}
+    </button>
+    <button type="submit">
+      <i class="fas fa-save"></i> {{localize "TBD.ActorConfig.Save"}}
+    </button>
+  </footer>
+</form>
