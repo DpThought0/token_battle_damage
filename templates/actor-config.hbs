@@ -8,6 +8,18 @@
     <p class="notes">{{localize "TBD.ActorConfig.TokenizerDetected"}}</p>
   {{/if}}
 
+  <div class="tbd-asset-tools">
+    <p class="notes">
+      {{localize "TBD.ActorConfig.AssetBrowserHint"}}
+      {{#if defaultImageDirectory}}
+        <code>{{defaultImageDirectory}}</code>
+      {{/if}}
+    </p>
+    <button type="button" data-action="open-art-browser">
+      <i class="fas fa-folder-open"></i> {{localize "TBD.ActorConfig.OpenArtBrowser"}}
+    </button>
+  </div>
+
   <section class="tbd-stage-list">
     <header class="tbd-stage-header">
       <span>{{localize "TBD.ActorConfig.Stage"}}</span>

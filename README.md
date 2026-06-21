@@ -4,7 +4,7 @@ Token Battle Damage is a Foundry VTT module that swaps token artwork as an actor
 
 ## Version
 
-Current development version: `0.1.2`
+Current development version: `0.1.3`
 
 ## Features in this first build
 
@@ -15,6 +15,7 @@ Current development version: `0.1.2`
 - Original token image preservation and restoration
 - Healing support, including reverting to healthier images
 - Optional 0 HP / defeated stage
+- Optional default art folder for browsing and uploading token damage images
 - GM-only update guard with duplicate-GM protection
 - Optional combat tracker refresh after token image changes
 - Tokenizer-safe behavior: selected images are stored independently in module flags
@@ -32,6 +33,8 @@ The actor configuration window currently uses Foundry's legacy `FormApplication`
 3. Open an Actor sheet as a GM.
 4. Click Battle Damage Art in the sheet header.
 5. Enable battle damage for the Actor and choose images for the configured HP stages.
+
+To make image selection easier, set the optional Battle damage art folder setting to the Foundry folder where you keep damage-state token images. The Actor configuration window includes an Open Art Browser button, which opens Foundry's file picker at that location. Use the file picker's upload controls to add new images if your Foundry user has upload permission.
 
 The default HP paths are:
 

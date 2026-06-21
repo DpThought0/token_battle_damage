@@ -1,5 +1,6 @@
-import { FLAGS, MODULE_ID } from "./constants.js";
-import { createDefaultConfig, normalizeConfig } from "./damage-engine.js";
+import { FLAGS, MODULE_ID, SETTINGS } from "./constants.js";
+import { getSetting } from "./settings.js";
+import { normalizeConfig } from "./damage-engine.js";
 
 export class BattleDamageActorConfig extends FormApplication {
   static get defaultOptions() {
@@ -28,6 +29,7 @@ export class BattleDamageActorConfig extends FormApplication {
       ...data,
       actor: this.actor,
       config,
+      defaultImageDirectory: getDefaultImageDirectory(),
       tokenizerAvailable: game.modules.get(MODULE_ID)?.api?.isTokenizerAvailable?.() ?? false
     };
   }
@@ -36,6 +38,7 @@ export class BattleDamageActorConfig extends FormApplication {
     super.activateListeners(html);
 
     html.find("[data-action='file-picker']").on("click", (event) => this.#openFilePicker(event));
+    html.find("[data-action='open-art-browser']").on("click", (event) => this.#openArtBrowser(event));
     html.find("[data-action='add-stage']").on("click", (event) => this.#addStage(event));
     html.find("[data-action='remove-stage']").on("click", (event) => this.#removeStage(event));
     html.find("[data-action='auto-distribute']").on("click", (event) => this.#autoDistribute(event));
@@ -69,10 +72,20 @@ export class BattleDamageActorConfig extends FormApplication {
 
     new FilePicker({
       type: "image",
-      current: input.value,
+      current: input.value || getDefaultImageDirectory(),
       callback: (path) => {
         input.value = path;
       }
+    }).browse();
+  }
+
+  #openArtBrowser(event) {
+    event.preventDefault();
+
+    new FilePicker({
+      type: "image",
+      current: getDefaultImageDirectory(),
+      callback: () => {}
     }).browse();
   }
 
@@ -147,4 +160,9 @@ function clampPercent(value) {
   const number = Number(value);
   if (!Number.isFinite(number)) return 0;
   return Math.max(0, Math.min(100, Math.round(number)));
+}
+
+function getDefaultImageDirectory() {
+  const configured = String(getSetting(SETTINGS.DEFAULT_IMAGE_DIRECTORY) ?? "").trim();
+  return configured || "";
 }

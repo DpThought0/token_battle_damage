@@ -12,6 +12,7 @@ export const SETTINGS = {
   REVERT_ON_HEALING: "revertOnHealing",
   ONLY_GM_UPDATES: "onlyGmUpdates",
   INCLUDE_DEFEATED_IMAGE: "includeDefeatedImage",
+  DEFAULT_IMAGE_DIRECTORY: "defaultImageDirectory",
   REFRESH_COMBAT_TRACKER: "refreshCombatTracker",
   DEBUG_LOGGING: "debugLogging"
 };

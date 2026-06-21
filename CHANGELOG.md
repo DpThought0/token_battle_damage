@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Fixed the damage-stage header overlap while scrolling in the Actor configuration dialog.
+- Added a default battle damage art folder setting.
+- Added an Open Art Browser button that opens Foundry's file picker for browsing and uploads.
+
 ## 0.1.2
 
 - Fixed the Actor configuration dialog layout so damage stages appear without a large blank scroll area.

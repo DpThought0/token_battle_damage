@@ -26,6 +26,22 @@
   padding: 0;
 }
 
+.token-battle-damage .tbd-asset-tools {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.token-battle-damage .tbd-asset-tools .notes {
+  margin: 0;
+}
+
+.token-battle-damage .tbd-asset-tools code {
+  user-select: text;
+}
+
 .token-battle-damage .tbd-stage-list {
   display: grid;
   gap: 0.35rem;
@@ -48,11 +64,7 @@
 .token-battle-damage .tbd-stage-header {
   font-weight: 700;
   opacity: 0.8;
-  position: sticky;
-  top: 0;
-  z-index: 1;
   padding-bottom: 0.2rem;
-  background: inherit;
 }
 
 .token-battle-damage .sheet-footer {
@@ -100,5 +112,9 @@
     grid-template-columns: 1fr;
     padding: 0.5rem 0;
     border-bottom: 1px solid rgb(0 0 0 / 20%);
+  }
+
+  .token-battle-damage .tbd-asset-tools {
+    grid-template-columns: 1fr;
   }
 }

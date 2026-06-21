@@ -46,6 +46,15 @@ export function registerSettings() {
     default: true
   });
 
+  game.settings.register(MODULE_ID, SETTINGS.DEFAULT_IMAGE_DIRECTORY, {
+    name: game.i18n.localize("TBD.Settings.DefaultImageDirectory.Name"),
+    hint: game.i18n.localize("TBD.Settings.DefaultImageDirectory.Hint"),
+    scope: "world",
+    config: true,
+    type: String,
+    default: ""
+  });
+
   game.settings.register(MODULE_ID, SETTINGS.ONLY_GM_UPDATES, {
     name: game.i18n.localize("TBD.Settings.OnlyGmUpdates.Name"),
     hint: game.i18n.localize("TBD.Settings.OnlyGmUpdates.Hint"),
