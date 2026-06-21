@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6
+
+- Corrected the HP path discovery instructions to use a selected token or named Actor lookup.
+
 ## 0.1.5
 
 - Added short HP path discovery instructions to the module settings and README.

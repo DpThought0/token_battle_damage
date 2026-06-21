@@ -4,7 +4,7 @@ Token Battle Damage is a Foundry VTT module that swaps token artwork as an actor
 
 ## Version
 
-Current development version: `0.1.5`
+Current development version: `0.1.6`
 
 ## Features in this first build
 
@@ -43,7 +43,7 @@ system.attributes.hp.value
 system.attributes.hp.max
 ```
 
-To find HP paths for another system: open an Actor, press F12, run `console.dir(actor.system)`, then expand the HP data. Add `system.` before the property path you find.
+To find HP paths for another system: select a token, press F12, run `console.dir(canvas.tokens.controlled[0].actor.system)`, then expand the HP data. Add `system.` before the property path you find. You can also inspect a specific Actor with `console.dir(game.actors.getName("Actor Name").system)`.
 
 ## Compatibility Notes
 
