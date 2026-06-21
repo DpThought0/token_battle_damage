@@ -20,7 +20,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Compress-Archive -Path module.json,README.md,lang,scripts,styles,templates -DestinationPath dist/token-battle-damage.zip -Force
+          Compress-Archive -Path module.json,README.md,CHANGELOG.md,lang,scripts,styles,templates -DestinationPath dist/token-battle-damage.zip -Force
           Copy-Item module.json dist/module.json
 
       - name: Publish GitHub release

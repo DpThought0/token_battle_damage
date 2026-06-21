@@ -4,7 +4,7 @@ Token Battle Damage is a Foundry VTT module that swaps token artwork as an actor
 
 ## Version
 
-Current development version: `0.1.0`
+Current development version: `0.1.1`
 
 ## Features in this first build
 
@@ -18,6 +18,12 @@ Current development version: `0.1.0`
 - GM-only update guard with duplicate-GM protection
 - Optional combat tracker refresh after token image changes
 - Tokenizer-safe behavior: selected images are stored independently in module flags
+
+## Foundry Compatibility
+
+This module is marked compatible with Foundry VTT v14. It uses the current package manifest compatibility field and avoids hard dependencies on game systems or other visual modules.
+
+The actor configuration window currently uses Foundry's legacy `FormApplication` API, which remains available in v14 but is deprecated. A future release should migrate the configuration UI to `ApplicationV2`.
 
 ## Usage
 
