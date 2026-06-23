@@ -1,5 +1,12 @@
 import { FLAGS, MODULE_ID } from "./constants.js";
-import { getDefaultStages, normalizeConfig } from "./damage-engine.js";
+import {
+  assignImagesToStages,
+  getDefaultStages,
+  getPresetStages,
+  normalizeConfig,
+  recommendPresetForImageCount,
+  updateTokenImageForStage
+} from "./damage-engine.js";
 import { ensureActorImageDirectory, getActorImageDirectory, uploadActorImageFiles } from "./asset-folders.js";
 
 export class BattleDamageActorConfig extends FormApplication {
@@ -41,6 +48,8 @@ export class BattleDamageActorConfig extends FormApplication {
     html.find("[data-action='open-art-browser']").on("click", (event) => this.#openArtBrowser(event));
     html.find("[data-action='upload-images']").on("click", (event) => this.#openUploadPicker(event));
     html.find("[data-action='upload-input']").on("change", (event) => this.#uploadImages(event));
+    html.find("[data-action='apply-preset']").on("click", (event) => this.#applyPreset(event));
+    html.find("[data-action='preview-stage']").on("click", (event) => this.#previewStage(event));
     html.find("[data-action='add-stage']").on("click", (event) => this.#addStage(event));
     html.find("[data-action='remove-stage']").on("click", (event) => this.#removeStage(event));
     html.find("[data-action='auto-distribute']").on("click", (event) => this.#autoDistribute(event));
@@ -49,21 +58,7 @@ export class BattleDamageActorConfig extends FormApplication {
   }
 
   async _updateObject(_event, formData) {
-    const expanded = foundry.utils.expandObject(formData);
-    const stages = Object.values(expanded.stages ?? {}).map((stage, index) => ({
-      id: stage.id || foundry.utils.randomID(),
-      label: String(stage.label ?? `Stage ${index + 1}`).trim(),
-      minPct: clampPercent(stage.minPct),
-      maxPct: clampPercent(stage.maxPct),
-      img: String(stage.img ?? "").trim(),
-      useOriginal: Boolean(stage.useOriginal)
-    }));
-
-    const config = {
-      enabled: Boolean(expanded.enabled),
-      stages
-    };
-
+    const config = this.#getConfigFromForm(formData);
     await this.actor.setFlag(MODULE_ID, FLAGS.CONFIG, config);
 
     if (config.enabled) {
@@ -112,8 +107,18 @@ export class BattleDamageActorConfig extends FormApplication {
 
     try {
       const paths = await uploadActorImageFiles(this.actor, files);
-      this.#fillEmptyStageImageInputs(paths);
-      ui.notifications.info(game.i18n.format("TBD.ActorConfig.UploadedImages", { count: paths.length }));
+      if (!paths.length) {
+        ui.notifications.warn(game.i18n.localize("TBD.ActorConfig.NoImagesUploaded"));
+        return;
+      }
+
+      const preset = recommendPresetForImageCount(paths.length);
+      const config = this.#getConfigFromCurrentForm();
+      config.enabled = true;
+      config.stages = assignImagesToStages(getPresetStages(preset), paths);
+      await this.actor.setFlag(MODULE_ID, FLAGS.CONFIG, config);
+      ui.notifications.info(game.i18n.format("TBD.ActorConfig.UploadedImages", { count: paths.length, preset: game.i18n.localize(`TBD.ActorConfig.Preset.${preset}`) }));
+      this.render();
     } catch (error) {
       ui.notifications.error(game.i18n.format("TBD.ActorConfig.UploadFailed", { error: error.message }));
     } finally {
@@ -121,19 +126,31 @@ export class BattleDamageActorConfig extends FormApplication {
     }
   }
 
-  #fillEmptyStageImageInputs(paths) {
-    const queue = [...paths];
-    const stageElements = Array.from(this.form.querySelectorAll(".tbd-stage"));
+  async #applyPreset(event) {
+    event.preventDefault();
 
-    for (const stageElement of stageElements) {
-      const imageInput = stageElement.querySelector("input[data-image-path]");
-      const useOriginal = stageElement.querySelector("input[data-use-original]")?.checked;
-      if (!imageInput || imageInput.value || useOriginal) continue;
+    const preset = event.currentTarget.dataset.preset ?? "full";
+    const config = this.#getConfigFromCurrentForm();
+    const existingImages = config.stages.filter((stage) => !stage.useOriginal && stage.img).map((stage) => stage.img);
 
-      const path = queue.shift();
-      if (!path) break;
-      imageInput.value = path;
+    config.enabled = true;
+    config.stages = assignImagesToStages(getPresetStages(preset), existingImages);
+    await this.actor.setFlag(MODULE_ID, FLAGS.CONFIG, config);
+    await this.#ensureActorDirectory({ notify: false });
+    this.render();
+  }
+
+  async #previewStage(event) {
+    event.preventDefault();
+
+    const stage = this.#getStageFromElement(event.currentTarget.closest(".tbd-stage"));
+    if (!stage) return;
+
+    const tokens = this.actor.getActiveTokens(true);
+    for (const token of tokens) {
+      await updateTokenImageForStage(token, stage);
     }
+    ui.notifications.info(game.i18n.format("TBD.ActorConfig.PreviewedStage", { label: stage.label }));
   }
 
   async #ensureActorDirectory({ notify = false } = {}) {
@@ -239,6 +256,40 @@ export class BattleDamageActorConfig extends FormApplication {
 
     if (config.enabled) await this.#ensureActorDirectory({ notify: false });
     this.render();
+  }
+
+  #getConfigFromCurrentForm() {
+    return this.#getConfigFromForm(Object.fromEntries(new FormData(this.form).entries()));
+  }
+
+  #getConfigFromForm(formData) {
+    const expanded = foundry.utils.expandObject(formData);
+    const stages = Object.values(expanded.stages ?? {}).map((stage, index) => ({
+      id: stage.id || foundry.utils.randomID(),
+      label: String(stage.label ?? `Stage ${index + 1}`).trim(),
+      minPct: clampPercent(stage.minPct),
+      maxPct: clampPercent(stage.maxPct),
+      img: String(stage.img ?? "").trim(),
+      useOriginal: Boolean(stage.useOriginal)
+    }));
+
+    return {
+      enabled: Boolean(expanded.enabled),
+      stages
+    };
+  }
+
+  #getStageFromElement(stageElement) {
+    if (!stageElement) return null;
+
+    return {
+      id: stageElement.querySelector("input[data-stage-id]")?.value || foundry.utils.randomID(),
+      label: String(stageElement.querySelector("input[data-stage-label]")?.value ?? "").trim() || game.i18n.localize("TBD.ActorConfig.NewStage"),
+      minPct: clampPercent(stageElement.querySelector("input[data-stage-min]")?.value),
+      maxPct: clampPercent(stageElement.querySelector("input[data-stage-max]")?.value),
+      img: String(stageElement.querySelector("input[data-image-path]")?.value ?? "").trim(),
+      useOriginal: Boolean(stageElement.querySelector("input[data-use-original]")?.checked)
+    };
   }
 }
 

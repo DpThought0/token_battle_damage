@@ -35,6 +35,58 @@ export function getDefaultStages() {
   ];
 }
 
+export function getPresetStages(preset) {
+  switch (preset) {
+    case "simple":
+      return [
+        { id: "healthy", label: "Healthy", minPct: 51, maxPct: 100, img: "", useOriginal: true },
+        { id: "damaged", label: "Damaged", minPct: 1, maxPct: 50, img: "", useOriginal: false }
+      ];
+    case "standard":
+      return [
+        { id: "healthy", label: "Healthy", minPct: 51, maxPct: 100, img: "", useOriginal: true },
+        { id: "light", label: "Lightly Damaged", minPct: 25, maxPct: 50, img: "", useOriginal: false },
+        { id: "severe", label: "Severely Damaged", minPct: 1, maxPct: 24, img: "", useOriginal: false }
+      ];
+    case "full":
+    default:
+      return getDefaultStages();
+  }
+}
+
+export function recommendPresetForImageCount(imageCount) {
+  if (imageCount <= 1) return "simple";
+  if (imageCount <= 2) return "standard";
+  return "full";
+}
+
+export function assignImagesToStages(stages, imagePaths) {
+  const assigned = stages.map((stage) => ({ ...stage }));
+  const paths = sortImagePathsForStages(imagePaths);
+  let index = 0;
+
+  for (const stage of assigned) {
+    if (stage.useOriginal) continue;
+    stage.img = paths[index] ?? "";
+    index += 1;
+  }
+
+  return assigned;
+}
+
+export function sortImagePathsForStages(imagePaths = []) {
+  return [...imagePaths].sort((a, b) => getImageStageWeight(a) - getImageStageWeight(b) || String(a).localeCompare(String(b)));
+}
+
+export function getImageStageWeight(path) {
+  const name = String(path).toLowerCase();
+  if (/\b(light|minor|slight|scratch|wound1|damage1|damaged1)\b/.test(name)) return 10;
+  if (/\b(moderate|medium|hurt|bloodied|wound2|damage2|damaged2)\b/.test(name)) return 20;
+  if (/\b(heavy|bad|severe|critical|near|wound3|damage3|damaged3)\b/.test(name)) return 30;
+  if (/\b(dead|death|defeated|down|ko|unconscious|corpse)\b/.test(name)) return 40;
+  return 25;
+}
+
 export function createDefaultConfig() {
   return {
     enabled: false,

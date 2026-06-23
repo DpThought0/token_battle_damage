@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8
+
+- Added Simple, Standard, and Full quick setup presets.
+- Made bulk upload automatically choose a setup based on image count and assign uploaded images.
+- Added thumbnails and per-stage token preview buttons to the Actor configuration dialog.
+
 ## 0.1.7
 
 - Added multi-image upload into each Actor's battle damage folder.

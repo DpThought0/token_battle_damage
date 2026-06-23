@@ -24,20 +24,34 @@
     <input type="file" accept="image/*" multiple data-action="upload-input">
   </div>
 
+  <div class="tbd-quick-setup">
+    <span>{{localize "TBD.ActorConfig.QuickSetup"}}</span>
+    <button type="button" data-action="apply-preset" data-preset="simple">
+      {{localize "TBD.ActorConfig.Preset.simple"}}
+    </button>
+    <button type="button" data-action="apply-preset" data-preset="standard">
+      {{localize "TBD.ActorConfig.Preset.standard"}}
+    </button>
+    <button type="button" data-action="apply-preset" data-preset="full">
+      {{localize "TBD.ActorConfig.Preset.full"}}
+    </button>
+  </div>
+
   <section class="tbd-stage-list">
     <header class="tbd-stage-header">
       <span>{{localize "TBD.ActorConfig.Stage"}}</span>
       <span>{{localize "TBD.ActorConfig.Range"}}</span>
       <span>{{localize "TBD.ActorConfig.Image"}}</span>
+      <span>{{localize "TBD.ActorConfig.Preview"}}</span>
       <span></span>
     </header>
 
     {{#each config.stages as |stage index|}}
       <div class="tbd-stage" data-stage-id="{{stage.id}}">
-        <input type="hidden" name="stages.{{index}}.id" value="{{stage.id}}">
+        <input type="hidden" name="stages.{{index}}.id" value="{{stage.id}}" data-stage-id>
 
         <div class="tbd-stage-label">
-          <input type="text" name="stages.{{index}}.label" value="{{stage.label}}">
+          <input type="text" name="stages.{{index}}.label" value="{{stage.label}}" data-stage-label>
           <label class="tbd-use-original">
             <input type="checkbox" name="stages.{{index}}.useOriginal" data-use-original {{checked stage.useOriginal}}>
             {{localize "TBD.ActorConfig.UseOriginal"}}
@@ -45,9 +59,9 @@
         </div>
 
         <div class="tbd-stage-range">
-          <input type="number" name="stages.{{index}}.minPct" value="{{stage.minPct}}" min="0" max="100">
+          <input type="number" name="stages.{{index}}.minPct" value="{{stage.minPct}}" min="0" max="100" data-stage-min>
           <span>-</span>
-          <input type="number" name="stages.{{index}}.maxPct" value="{{stage.maxPct}}" min="0" max="100">
+          <input type="number" name="stages.{{index}}.maxPct" value="{{stage.maxPct}}" min="0" max="100" data-stage-max>
           <span>%</span>
         </div>
 
@@ -55,6 +69,21 @@
           <input type="text" name="stages.{{index}}.img" value="{{stage.img}}" data-image-path>
           <button type="button" data-action="file-picker" title="{{localize 'TBD.ActorConfig.Browse'}}">
             <i class="fas fa-file-import"></i>
+          </button>
+        </div>
+
+        <div class="tbd-stage-preview">
+          {{#if stage.useOriginal}}
+            <span class="tbd-original-preview">{{localize "TBD.ActorConfig.OriginalPreview"}}</span>
+          {{else}}
+            {{#if stage.img}}
+              <img src="{{stage.img}}" alt="{{stage.label}}" loading="lazy">
+            {{else}}
+              <span class="tbd-empty-preview">-</span>
+            {{/if}}
+          {{/if}}
+          <button type="button" data-action="preview-stage" title="{{localize 'TBD.ActorConfig.PreviewStage'}}">
+            <i class="fas fa-eye"></i>
           </button>
         </div>
 

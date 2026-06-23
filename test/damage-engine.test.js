@@ -38,6 +38,35 @@ test("findStageForPercent returns the matching threshold", () => {
   assert.equal(engine.findStageForPercent(stages, 101), null);
 });
 
+test("recommendPresetForImageCount chooses a setup by image count", () => {
+  assert.equal(engine.recommendPresetForImageCount(1), "simple");
+  assert.equal(engine.recommendPresetForImageCount(2), "standard");
+  assert.equal(engine.recommendPresetForImageCount(3), "full");
+});
+
+test("getPresetStages returns expected setup sizes", () => {
+  assert.equal(engine.getPresetStages("simple").length, 2);
+  assert.equal(engine.getPresetStages("standard").length, 3);
+  assert.equal(engine.getPresetStages("full").length, 6);
+});
+
+test("assignImagesToStages skips original stages and sorts likely damage order", () => {
+  const stages = engine.getPresetStages("standard");
+  const assigned = engine.assignImagesToStages(stages, [
+    "BattleDamage/Creeg/severe.webp",
+    "BattleDamage/Creeg/light.webp"
+  ]);
+
+  assert.equal(assigned[0].useOriginal, true);
+  assert.equal(assigned[0].img, "");
+  assert.equal(assigned[1].img, "BattleDamage/Creeg/light.webp");
+  assert.equal(assigned[2].img, "BattleDamage/Creeg/severe.webp");
+});
+
+test("sortImagePathsForStages puts defeated images last", () => {
+  assert.deepEqual(engine.sortImagePathsForStages(["dead.webp", "light.webp", "critical.webp"]), ["light.webp", "critical.webp", "dead.webp"]);
+});
+
 test("getActorHp reads configured paths", () => {
   const actor = {
     system: {

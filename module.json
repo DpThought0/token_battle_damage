@@ -2,7 +2,7 @@
   "id": "token-battle-damage",
   "title": "Token Battle Damage",
   "description": "Automatically swaps token artwork based on configurable actor HP thresholds.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "authors": [
     {
       "name": "DpThought0"
