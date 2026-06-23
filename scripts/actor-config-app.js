@@ -1,6 +1,6 @@
 import { FLAGS, MODULE_ID } from "./constants.js";
-import { normalizeConfig } from "./damage-engine.js";
-import { ensureActorImageDirectory, getActorImageDirectory } from "./asset-folders.js";
+import { getDefaultStages, normalizeConfig } from "./damage-engine.js";
+import { ensureActorImageDirectory, getActorImageDirectory, uploadActorImageFiles } from "./asset-folders.js";
 
 export class BattleDamageActorConfig extends FormApplication {
   static get defaultOptions() {
@@ -39,10 +39,13 @@ export class BattleDamageActorConfig extends FormApplication {
 
     html.find("[data-action='file-picker']").on("click", (event) => this.#openFilePicker(event));
     html.find("[data-action='open-art-browser']").on("click", (event) => this.#openArtBrowser(event));
+    html.find("[data-action='upload-images']").on("click", (event) => this.#openUploadPicker(event));
+    html.find("[data-action='upload-input']").on("change", (event) => this.#uploadImages(event));
     html.find("[data-action='add-stage']").on("click", (event) => this.#addStage(event));
     html.find("[data-action='remove-stage']").on("click", (event) => this.#removeStage(event));
     html.find("[data-action='auto-distribute']").on("click", (event) => this.#autoDistribute(event));
     html.find("[data-action='restore-original']").on("click", (event) => this.#restoreOriginalImages(event));
+    html.find("[data-action='reset-stages']").on("click", (event) => this.#resetStages(event));
   }
 
   async _updateObject(_event, formData) {
@@ -95,6 +98,42 @@ export class BattleDamageActorConfig extends FormApplication {
         callback: () => {}
       }).browse();
     });
+  }
+
+  #openUploadPicker(event) {
+    event.preventDefault();
+    this.form.querySelector("[data-action='upload-input']")?.click();
+  }
+
+  async #uploadImages(event) {
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+
+    try {
+      const paths = await uploadActorImageFiles(this.actor, files);
+      this.#fillEmptyStageImageInputs(paths);
+      ui.notifications.info(game.i18n.format("TBD.ActorConfig.UploadedImages", { count: paths.length }));
+    } catch (error) {
+      ui.notifications.error(game.i18n.format("TBD.ActorConfig.UploadFailed", { error: error.message }));
+    } finally {
+      input.value = "";
+    }
+  }
+
+  #fillEmptyStageImageInputs(paths) {
+    const queue = [...paths];
+    const stageElements = Array.from(this.form.querySelectorAll(".tbd-stage"));
+
+    for (const stageElement of stageElements) {
+      const imageInput = stageElement.querySelector("input[data-image-path]");
+      const useOriginal = stageElement.querySelector("input[data-use-original]")?.checked;
+      if (!imageInput || imageInput.value || useOriginal) continue;
+
+      const path = queue.shift();
+      if (!path) break;
+      imageInput.value = path;
+    }
   }
 
   async #ensureActorDirectory({ notify = false } = {}) {
@@ -172,8 +211,34 @@ export class BattleDamageActorConfig extends FormApplication {
       updates.push(doc.update({ "texture.src": original }));
     }
 
+    const originalActorImg = this.actor.getFlag(MODULE_ID, FLAGS.ORIGINAL_ACTOR_IMG);
+    if (originalActorImg && this.actor.img !== originalActorImg) {
+      updates.push(this.actor.update({ img: originalActorImg }));
+    }
+
     await Promise.all(updates);
     ui.notifications.info(game.i18n.format("TBD.ActorConfig.RestoredOriginals", { count: updates.length }));
+  }
+
+  async #resetStages(event) {
+    event.preventDefault();
+
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize("TBD.ActorConfig.ResetStages"),
+      content: `<p>${game.i18n.localize("TBD.ActorConfig.ResetStagesConfirm")}</p>`,
+      yes: () => true,
+      no: () => false,
+      defaultYes: false
+    });
+
+    if (!confirmed) return;
+
+    const config = normalizeConfig(this.actor.getFlag(MODULE_ID, FLAGS.CONFIG));
+    config.stages = getDefaultStages();
+    await this.actor.setFlag(MODULE_ID, FLAGS.CONFIG, config);
+
+    if (config.enabled) await this.#ensureActorDirectory({ notify: false });
+    this.render();
   }
 }
 

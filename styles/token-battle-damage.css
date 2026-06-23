@@ -28,7 +28,7 @@
 
 .token-battle-damage .tbd-asset-tools {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 0.5rem;
   align-items: center;
   flex: 0 0 auto;
@@ -40,6 +40,10 @@
 
 .token-battle-damage .tbd-asset-tools code {
   user-select: text;
+}
+
+.token-battle-damage .tbd-asset-tools input[type="file"] {
+  display: none;
 }
 
 .token-battle-damage .tbd-stage-list {

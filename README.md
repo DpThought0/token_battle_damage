@@ -4,7 +4,7 @@ Token Battle Damage is a Foundry VTT module that swaps token artwork as an actor
 
 ## Version
 
-Current development version: `0.1.6`
+Current development version: `0.1.7`
 
 ## Features in this first build
 
@@ -16,6 +16,8 @@ Current development version: `0.1.6`
 - Healing support, including reverting to healthier images
 - Optional 0 HP / defeated stage
 - Default `BattleDamage` art folder with actor-specific subfolders
+- Multi-image upload into each Actor's battle damage folder
+- Reset button for default stage names and thresholds
 - GM-only update guard with duplicate-GM protection
 - Optional combat tracker refresh after token image changes
 - Tokenizer-safe behavior: selected images are stored independently in module flags
@@ -36,6 +38,8 @@ The actor configuration window currently uses Foundry's legacy `FormApplication`
 
 To make image selection easier, Token Battle Damage uses a `BattleDamage` folder in Foundry User Data by default. When battle damage is enabled for an Actor, the module creates an actor-specific subfolder such as `BattleDamage/Creeg-Greythorn`. The Actor configuration window includes an Open Actor Art Folder button, which opens Foundry's file picker at that location. Use the file picker's upload controls to add new images if your Foundry user has upload permission.
 
+The Upload Images button lets you select several local image files at once. The module uploads them into that Actor's battle damage folder and fills empty non-original stage image fields in order. Foundry's public FilePicker API does not provide safe file deletion, so Reset Stages clears the module's stage configuration but does not delete uploaded files.
+
 The default HP paths are:
 
 ```text
@@ -54,6 +58,8 @@ This module does not require Tokenizer and does not modify Tokenizer's UI or act
 ### Carousel Combat Tracker
 
 This module does not patch combat tracker templates or manipulate tracker UI. It updates the underlying token image. If a tracker module does not refresh immediately, enable the optional "Refresh combat tracker after image update" setting.
+
+Some carousel-style trackers use the Actor portrait instead of the token image. For those, enable the optional "Update Actor portrait for combat trackers" setting.
 
 ## Development
 

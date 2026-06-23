@@ -18,6 +18,10 @@
     <button type="button" data-action="open-art-browser">
       <i class="fas fa-folder-open"></i> {{localize "TBD.ActorConfig.OpenArtBrowser"}}
     </button>
+    <button type="button" data-action="upload-images">
+      <i class="fas fa-upload"></i> {{localize "TBD.ActorConfig.UploadImages"}}
+    </button>
+    <input type="file" accept="image/*" multiple data-action="upload-input">
   </div>
 
   <section class="tbd-stage-list">
@@ -35,7 +39,7 @@
         <div class="tbd-stage-label">
           <input type="text" name="stages.{{index}}.label" value="{{stage.label}}">
           <label class="tbd-use-original">
-            <input type="checkbox" name="stages.{{index}}.useOriginal" {{checked stage.useOriginal}}>
+            <input type="checkbox" name="stages.{{index}}.useOriginal" data-use-original {{checked stage.useOriginal}}>
             {{localize "TBD.ActorConfig.UseOriginal"}}
           </label>
         </div>
@@ -70,6 +74,9 @@
     </button>
     <button type="button" data-action="restore-original">
       <i class="fas fa-rotate-left"></i> {{localize "TBD.ActorConfig.RestoreOriginal"}}
+    </button>
+    <button type="button" data-action="reset-stages">
+      <i class="fas fa-undo"></i> {{localize "TBD.ActorConfig.ResetStages"}}
     </button>
     <button type="submit">
       <i class="fas fa-save"></i> {{localize "TBD.ActorConfig.Save"}}

@@ -64,6 +64,15 @@ export function registerSettings() {
     default: true
   });
 
+  game.settings.register(MODULE_ID, SETTINGS.UPDATE_ACTOR_PORTRAIT_FOR_TRACKERS, {
+    name: game.i18n.localize("TBD.Settings.UpdateActorPortraitForTrackers.Name"),
+    hint: game.i18n.localize("TBD.Settings.UpdateActorPortraitForTrackers.Hint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false
+  });
+
   game.settings.register(MODULE_ID, SETTINGS.REFRESH_COMBAT_TRACKER, {
     name: game.i18n.localize("TBD.Settings.RefreshCombatTracker.Name"),
     hint: game.i18n.localize("TBD.Settings.RefreshCombatTracker.Hint"),

@@ -100,6 +100,10 @@ export async function updateBattleDamageForActor(actor) {
   for (const token of tokens) {
     await updateTokenImageForStage(token, stage);
   }
+
+  if (getSetting(SETTINGS.UPDATE_ACTOR_PORTRAIT_FOR_TRACKERS)) {
+    await updateActorPortraitForStage(actor, stage);
+  }
 }
 
 export function filterStages(stages = []) {
@@ -126,4 +130,21 @@ export async function updateTokenImageForStage(token, stage) {
   if (getSetting(SETTINGS.REFRESH_COMBAT_TRACKER)) {
     ui.combat?.render(false);
   }
+}
+
+export async function updateActorPortraitForStage(actor, stage) {
+  let original = actor.getFlag(MODULE_ID, FLAGS.ORIGINAL_ACTOR_IMG);
+
+  if (!original) {
+    original = actor.img;
+    if (original) await actor.setFlag(MODULE_ID, FLAGS.ORIGINAL_ACTOR_IMG, original);
+  }
+
+  if (stage.useOriginal && !getSetting(SETTINGS.REVERT_ON_HEALING)) return;
+
+  const desiredImg = stage.useOriginal ? original : stage.img;
+  if (!desiredImg || actor.img === desiredImg) return;
+
+  await actor.update({ img: desiredImg });
+  ui.combat?.render(false);
 }

@@ -23,6 +23,19 @@ export async function ensureActorImageDirectory(actor) {
   return actorDirectory;
 }
 
+export async function uploadActorImageFiles(actor, files) {
+  const directory = await ensureActorImageDirectory(actor);
+  const uploaded = [];
+
+  for (const file of Array.from(files ?? [])) {
+    if (!file?.type?.startsWith("image/")) continue;
+    const response = await FilePicker.upload(FILE_PICKER_SOURCE, directory, file, {}, { notify: false });
+    uploaded.push(getUploadedPath(response, directory, file));
+  }
+
+  return uploaded;
+}
+
 export async function ensureFoundryDirectory(path) {
   const normalized = normalizeDirectoryPath(path);
   if (!normalized) return "";
@@ -65,4 +78,8 @@ export function slugifyActorFolder(name, fallback = "actor") {
     .replace(/^[-.]+|[-.]+$/g, "");
 
   return slug || String(fallback ?? "actor").replace(/[^a-zA-Z0-9._-]+/g, "-") || "actor";
+}
+
+export function getUploadedPath(response, directory, file) {
+  return response?.path ?? response?.file ?? `${normalizeDirectoryPath(directory)}/${file.name}`;
 }

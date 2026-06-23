@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+
+- Added multi-image upload into each Actor's battle damage folder.
+- Added Reset Stages to restore default stage names, thresholds, original-image flags, and empty image paths.
+- Added an optional Actor portrait update setting for carousel-style combat trackers.
+- Documented that uploaded file deletion is not available through Foundry's public FilePicker API.
+
 ## 0.1.6
 
 - Corrected the HP path discovery instructions to use a selected token or named Actor lookup.

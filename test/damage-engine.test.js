@@ -72,3 +72,8 @@ test("normalizeDirectoryPath trims duplicate separators", () => {
 test("getActorImageDirectory uses the configured root folder", () => {
   assert.equal(assetFolders.getActorImageDirectory({ name: "Creeg Greythorn", id: "actor1" }), "BattleDamage/Creeg-Greythorn");
 });
+
+test("getUploadedPath reads Foundry upload responses or falls back to directory and filename", () => {
+  assert.equal(assetFolders.getUploadedPath({ path: "BattleDamage/Creeg/token.webp" }, "BattleDamage/Creeg", { name: "fallback.webp" }), "BattleDamage/Creeg/token.webp");
+  assert.equal(assetFolders.getUploadedPath({}, "BattleDamage/Creeg", { name: "fallback.webp" }), "BattleDamage/Creeg/fallback.webp");
+});
